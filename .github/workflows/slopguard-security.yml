@@ -71,14 +71,35 @@ jobs:
             exit 1
           fi
 
-      - name: Run SlopGuard
-        env:
-          SLOPGUARD_REQUIREMENTS_FILE: ${{ github.workspace }}/demo-app/requirements.txt
-        run: |
-          python slopguard/slopguard.py
+      
+      
       # Scan application dependencies before installation
       - name: Run SlopGuard
         env:
           SLOPGUARD_REQUIREMENTS_FILE: ${{ github.workspace }}/demo-app/requirements.txt
         run: |
+          echo "========== DEBUG FILE LOCATIONS =========="
+
+          echo "Current directory:"
+          pwd
+
+          echo "Workspace files:"
+          ls -la
+
+          echo "Demo App files:"
+          ls -la demo-app/
+
+          echo "Requirements path:"
+          echo "$SLOPGUARD_REQUIREMENTS_FILE"
+
+          echo "Checking requirements file:"
+          if [ -f "$SLOPGUARD_REQUIREMENTS_FILE" ]; then
+            echo "FOUND: requirements.txt"
+            cat "$SLOPGUARD_REQUIREMENTS_FILE"
+          else
+            echo "ERROR: Requirements file missing"
+            exit 1
+          fi
+
+          echo "========== RUNNING SLOPGUARD =========="
           python slopguard/slopguard.py
