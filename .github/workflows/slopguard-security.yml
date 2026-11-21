@@ -44,6 +44,17 @@ jobs:
         run: |
           python -m pip install -r slopguard/scanner-requirements.txt
 
+
+      - name: Verify Demo App requirements
+        run: |
+          echo "Current workspace:"
+          pwd
+          echo "Demo App files:"
+          ls -la demo-app
+          echo "Requirements file:"
+          test -f demo-app/requirements.txt
+          cat demo-app/requirements.txt
+          
       # Scan application dependencies before installation
       - name: Run SlopGuard
         env:
