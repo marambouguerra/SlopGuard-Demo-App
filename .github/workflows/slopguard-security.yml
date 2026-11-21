@@ -54,7 +54,28 @@ jobs:
           echo "Requirements file:"
           test -f demo-app/requirements.txt
           cat demo-app/requirements.txt
-          
+          - name: Check requirements file location
+        run: |
+          echo "Current directory:"
+          pwd
+
+          echo "Demo App files:"
+          ls -la demo-app/
+
+          echo "Checking requirements.txt:"
+          if [ -f demo-app/requirements.txt ]; then
+            echo "FOUND: requirements.txt"
+            cat demo-app/requirements.txt
+          else
+            echo "MISSING: requirements.txt"
+            exit 1
+          fi
+
+      - name: Run SlopGuard
+        env:
+          SLOPGUARD_REQUIREMENTS_FILE: ${{ github.workspace }}/demo-app/requirements.txt
+        run: |
+          python slopguard/slopguard.py
       # Scan application dependencies before installation
       - name: Run SlopGuard
         env:
