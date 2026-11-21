@@ -27,7 +27,7 @@ jobs:
       - name: Checkout private SlopGuard
         uses: actions/checkout@v4
         with:
-          repository: ${{ github.repository_owner }}/SlopGuard
+          repository: ${{ github.repository_owner }}/slop-guard
           ref: main
           path: slopguard
           token: ${{ secrets.SLOPGUARD_REPO_TOKEN }}
