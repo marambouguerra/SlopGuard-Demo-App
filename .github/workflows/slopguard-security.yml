@@ -16,90 +16,51 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Download the public Demo App
       - name: Checkout Demo App
         uses: actions/checkout@v4
         with:
           path: demo-app
           persist-credentials: false
 
-      # Download the private SlopGuard scanner
       - name: Checkout private SlopGuard
         uses: actions/checkout@v4
         with:
-          repository: ${{ github.repository_owner }}/slop-guard
+          repository: marambouguerra/slop-guard
           ref: main
           path: slopguard
           token: ${{ secrets.SLOPGUARD_REPO_TOKEN }}
           persist-credentials: false
 
-      # Set up Python for the scanner
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.13'
 
-      # Install only SlopGuard's own tooling
       - name: Install scanner dependencies
         run: |
           python -m pip install -r slopguard/scanner-requirements.txt
 
-
-      - name: Verify Demo App requirements
+      - name: DEBUG - Check files and paths
         run: |
-          echo "Current workspace:"
+          echo "========== DEBUG START =========="
           pwd
-          echo "Demo App files:"
+          echo "Workspace:"
+          ls -la
+          echo "Demo App:"
           ls -la demo-app
-          echo "Requirements file:"
-          test -f demo-app/requirements.txt
-          cat demo-app/requirements.txt
-          - name: Check requirements file location
-        run: |
-          echo "Current directory:"
-          pwd
-
-          echo "Demo App files:"
-          ls -la demo-app/
-
-          echo "Checking requirements.txt:"
-          if [ -f demo-app/requirements.txt ]; then
+          echo "Requirements file check:"
+          if test -f demo-app/requirements.txt; then
             echo "FOUND: requirements.txt"
             cat demo-app/requirements.txt
           else
             echo "MISSING: requirements.txt"
             exit 1
           fi
+          echo "========== DEBUG END =========="
 
-      
-      
-      # Scan application dependencies before installation
       - name: Run SlopGuard
         env:
           SLOPGUARD_REQUIREMENTS_FILE: ${{ github.workspace }}/demo-app/requirements.txt
         run: |
-          echo "========== DEBUG FILE LOCATIONS =========="
-
-          echo "Current directory:"
-          pwd
-
-          echo "Workspace files:"
-          ls -la
-
-          echo "Demo App files:"
-          ls -la demo-app/
-
-          echo "Requirements path:"
-          echo "$SLOPGUARD_REQUIREMENTS_FILE"
-
-          echo "Checking requirements file:"
-          if [ -f "$SLOPGUARD_REQUIREMENTS_FILE" ]; then
-            echo "FOUND: requirements.txt"
-            cat "$SLOPGUARD_REQUIREMENTS_FILE"
-          else
-            echo "ERROR: Requirements file missing"
-            exit 1
-          fi
-
-          echo "========== RUNNING SLOPGUARD =========="
+          echo "SCANNING FILE: $SLOPGUARD_REQUIREMENTS_FILE"
           python slopguard/slopguard.py
